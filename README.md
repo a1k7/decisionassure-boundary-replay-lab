@@ -1,6 +1,4 @@
-DecisionAssure Boundary Replay Lab — README.md
 
-markdown
 # DecisionAssure Boundary Replay Lab
 
 A deterministic, local, synthetic demonstration that makes a single architectural
