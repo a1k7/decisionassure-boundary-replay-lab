@@ -1,0 +1,302 @@
+{
+  "scenarios": [
+    {
+      "scenario_id": "A_baseline",
+      "title": "A — Baseline admissible",
+      "description": "Action is admissible under the original policy with valid authority and fresh evidence.",
+      "action": {
+        "action_id": "release_funds",
+        "parameters": {"amount": 2500, "currency": "USD", "payee": "synthetic-vendor-001"}
+      },
+      "original": {
+        "policy": {
+          "policy_id": "treasury.release",
+          "version": "1.0",
+          "rules": [
+            {
+              "rule_id": "release-default",
+              "match_actions": ["release_funds"],
+              "require_authority": true,
+              "require_fresh_evidence": true,
+              "on_match": "ALLOW",
+              "on_violation": "DENY"
+            }
+          ]
+        },
+        "authority": {"subject_id": "agent-treasury-01", "state": "VALID", "source": "synthetic"},
+        "evidence": [
+          {"evidence_id": "ev-balance", "captured_at_seq": 100, "max_age_seq": 10, "source": "synthetic"}
+        ],
+        "evaluation_seq": 105
+      },
+      "state_change": null,
+      "replay": null,
+      "execution_observation": null
+    },
+    {
+      "scenario_id": "B_authority_revoked",
+      "title": "B — Authority revoked after original decision",
+      "description": "Original decision was admissible. Later, authority is revoked. Replay shows the impact.",
+      "action": {
+        "action_id": "release_funds",
+        "parameters": {"amount": 2500, "currency": "USD", "payee": "synthetic-vendor-001"}
+      },
+      "original": {
+        "policy": {
+          "policy_id": "treasury.release",
+          "version": "1.0",
+          "rules": [
+            {
+              "rule_id": "release-default",
+              "match_actions": ["release_funds"],
+              "require_authority": true,
+              "require_fresh_evidence": true,
+              "on_match": "ALLOW",
+              "on_violation": "DENY"
+            }
+          ]
+        },
+        "authority": {"subject_id": "agent-treasury-01", "state": "VALID", "source": "synthetic"},
+        "evidence": [
+          {"evidence_id": "ev-balance", "captured_at_seq": 100, "max_age_seq": 10, "source": "synthetic"}
+        ],
+        "evaluation_seq": 105
+      },
+      "state_change": {
+        "change_id": "chg-authority-revoke",
+        "kind": "AUTHORITY_STATE",
+        "description": "Synthetic authority state for agent-treasury-01 was revoked at seq 140.",
+        "applied_at_seq": 140
+      },
+      "replay": {
+        "policy": {
+          "policy_id": "treasury.release",
+          "version": "1.0",
+          "rules": [
+            {
+              "rule_id": "release-default",
+              "match_actions": ["release_funds"],
+              "require_authority": true,
+              "require_fresh_evidence": true,
+              "on_match": "ALLOW",
+              "on_violation": "DENY"
+            }
+          ]
+        },
+        "authority": {"subject_id": "agent-treasury-01", "state": "REVOKED", "source": "synthetic"},
+        "evidence": [
+          {"evidence_id": "ev-balance", "captured_at_seq": 100, "max_age_seq": 10, "source": "synthetic"}
+        ],
+        "evaluation_seq": 145
+      },
+      "execution_observation": null
+    },
+    {
+      "scenario_id": "C_policy_tightened",
+      "title": "C — Policy tightened",
+      "description": "Original policy allowed the action. A new policy version prohibits it.",
+      "action": {
+        "action_id": "release_funds",
+        "parameters": {"amount": 2500, "currency": "USD", "payee": "synthetic-vendor-001"}
+      },
+      "original": {
+        "policy": {
+          "policy_id": "treasury.release",
+          "version": "1.0",
+          "rules": [
+            {
+              "rule_id": "release-default",
+              "match_actions": ["release_funds"],
+              "require_authority": true,
+              "require_fresh_evidence": true,
+              "on_match": "ALLOW",
+              "on_violation": "DENY"
+            }
+          ]
+        },
+        "authority": {"subject_id": "agent-treasury-01", "state": "VALID", "source": "synthetic"},
+        "evidence": [
+          {"evidence_id": "ev-balance", "captured_at_seq": 100, "max_age_seq": 10, "source": "synthetic"}
+        ],
+        "evaluation_seq": 105
+      },
+      "state_change": {
+        "change_id": "chg-policy-2.0",
+        "kind": "POLICY_VERSION",
+        "description": "Policy treasury.release updated to 2.0 which denies release_funds under the tightened rule.",
+        "applied_at_seq": 130
+      },
+      "replay": {
+        "policy": {
+          "policy_id": "treasury.release",
+          "version": "2.0",
+          "rules": [
+            {
+              "rule_id": "release-tightened",
+              "match_actions": ["release_funds"],
+              "require_authority": true,
+              "require_fresh_evidence": true,
+              "on_match": "DENY",
+              "on_violation": "DENY"
+            }
+          ]
+        },
+        "authority": {"subject_id": "agent-treasury-01", "state": "VALID", "source": "synthetic"},
+        "evidence": [
+          {"evidence_id": "ev-balance", "captured_at_seq": 100, "max_age_seq": 10, "source": "synthetic"}
+        ],
+        "evaluation_seq": 135
+      },
+      "execution_observation": null
+    },
+    {
+      "scenario_id": "D_evidence_stale",
+      "title": "D — Evidence becomes stale",
+      "description": "Original evidence was fresh. Under the replay evaluation sequence, the same evidence is stale.",
+      "action": {
+        "action_id": "release_funds",
+        "parameters": {"amount": 2500, "currency": "USD", "payee": "synthetic-vendor-001"}
+      },
+      "original": {
+        "policy": {
+          "policy_id": "treasury.release",
+          "version": "1.0",
+          "rules": [
+            {
+              "rule_id": "release-default",
+              "match_actions": ["release_funds"],
+              "require_authority": true,
+              "require_fresh_evidence": true,
+              "on_match": "ALLOW",
+              "on_violation": "DENY"
+            }
+          ]
+        },
+        "authority": {"subject_id": "agent-treasury-01", "state": "VALID", "source": "synthetic"},
+        "evidence": [
+          {"evidence_id": "ev-balance", "captured_at_seq": 100, "max_age_seq": 10, "source": "synthetic"}
+        ],
+        "evaluation_seq": 105
+      },
+      "state_change": {
+        "change_id": "chg-time-advance",
+        "kind": "EVIDENCE_FRESHNESS",
+        "description": "Logical time advanced. Same evidence reference is now evaluated at seq 130, beyond its max_age_seq.",
+        "applied_at_seq": 130
+      },
+      "replay": {
+        "policy": {
+          "policy_id": "treasury.release",
+          "version": "1.0",
+          "rules": [
+            {
+              "rule_id": "release-default",
+              "match_actions": ["release_funds"],
+              "require_authority": true,
+              "require_fresh_evidence": true,
+              "on_match": "ALLOW",
+              "on_violation": "DENY"
+            }
+          ]
+        },
+        "authority": {"subject_id": "agent-treasury-01", "state": "VALID", "source": "synthetic"},
+        "evidence": [
+          {"evidence_id": "ev-balance", "captured_at_seq": 100, "max_age_seq": 10, "source": "synthetic"}
+        ],
+        "evaluation_seq": 130
+      },
+      "execution_observation": null
+    },
+    {
+      "scenario_id": "E_no_change",
+      "title": "E — No material change",
+      "description": "Policy, authority and evidence remain valid. Replay must not invent an impact.",
+      "action": {
+        "action_id": "release_funds",
+        "parameters": {"amount": 2500, "currency": "USD", "payee": "synthetic-vendor-001"}
+      },
+      "original": {
+        "policy": {
+          "policy_id": "treasury.release",
+          "version": "1.0",
+          "rules": [
+            {
+              "rule_id": "release-default",
+              "match_actions": ["release_funds"],
+              "require_authority": true,
+              "require_fresh_evidence": true,
+              "on_match": "ALLOW",
+              "on_violation": "DENY"
+            }
+          ]
+        },
+        "authority": {"subject_id": "agent-treasury-01", "state": "VALID", "source": "synthetic"},
+        "evidence": [
+          {"evidence_id": "ev-balance", "captured_at_seq": 100, "max_age_seq": 10, "source": "synthetic"}
+        ],
+        "evaluation_seq": 105
+      },
+      "state_change": {
+        "change_id": "chg-noop",
+        "kind": "POLICY_VERSION",
+        "description": "Simulated governance re-check with no material change to policy, authority or evidence.",
+        "applied_at_seq": 106
+      },
+      "replay": {
+        "policy": {
+          "policy_id": "treasury.release",
+          "version": "1.0",
+          "rules": [
+            {
+              "rule_id": "release-default",
+              "match_actions": ["release_funds"],
+              "require_authority": true,
+              "require_fresh_evidence": true,
+              "on_match": "ALLOW",
+              "on_violation": "DENY"
+            }
+          ]
+        },
+        "authority": {"subject_id": "agent-treasury-01", "state": "VALID", "source": "synthetic"},
+        "evidence": [
+          {"evidence_id": "ev-balance", "captured_at_seq": 100, "max_age_seq": 10, "source": "synthetic"}
+        ],
+        "evaluation_seq": 106
+      },
+      "execution_observation": null
+    },
+    {
+      "scenario_id": "F_exec_not_observed",
+      "title": "F — Execution authority not independently observed",
+      "description": "Admissibility ALLOW, but no execution-time authority observation is supplied.",
+      "action": {
+        "action_id": "release_funds",
+        "parameters": {"amount": 2500, "currency": "USD", "payee": "synthetic-vendor-001"}
+      },
+      "original": {
+        "policy": {
+          "policy_id": "treasury.release",
+          "version": "1.0",
+          "rules": [
+            {
+              "rule_id": "release-default",
+              "match_actions": ["release_funds"],
+              "require_authority": true,
+              "require_fresh_evidence": true,
+              "on_match": "ALLOW",
+              "on_violation": "DENY"
+            }
+          ]
+        },
+        "authority": {"subject_id": "agent-treasury-01", "state": "VALID", "source": "synthetic"},
+        "evidence": [
+          {"evidence_id": "ev-balance", "captured_at_seq": 100, "max_age_seq": 10, "source": "synthetic"}
+        ],
+        "evaluation_seq": 105
+      },
+      "state_change": null,
+      "replay": null,
+      "execution_observation": null
+    }
+  ]
+}
